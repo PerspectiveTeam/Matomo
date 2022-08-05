@@ -1,0 +1,7 @@
+<?xml version="1.0" ?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:Cache/etc/cache.xsd">
+    <type instance="Perspective\Matomo\Model\Cache\OperationsCache" name="matomo_operations_cache" translate="label,description">
+        <label>Matomo Cache</label>
+        <description>Matomo operations Cache</description>
+    </type>
+</config>

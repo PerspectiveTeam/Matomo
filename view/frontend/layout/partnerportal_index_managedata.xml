@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
+      <update handle="customer_account"/>
+      <body>
+        <referenceContainer name="content">
+           <container name="right.section" htmlTag="div" htmlClass="col-md-9" >
+               <referenceBlock name="managedata">
+                   <block class="Perspective\Matomo\Block\Customer\Account\DealsMain" name="deal_management_tab" template="Perspective_Matomo::page/deal_management.phtml" />
+               </referenceBlock>
+           </container>
+        </referenceContainer>
+    </body>
+</page>

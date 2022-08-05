@@ -1,0 +1,23 @@
+<?php /** @var $block \Perspective\Matomo\Block\Customer\Account\DealsMain */ ?>
+<h3 class="deal-management-title"><?= __("Deal-Management"); ?></h3>
+<div class="deal-management-container" data-mage-init='{"loader": { "icon": "<?= /* @escapeNotVerified */ $block->getViewFileUrl('images/loader-1.gif') ?>"}}'>
+    <h4><?php echo __("Deal Page Performance Overview der letzten 7 Tage"); ?></h4>
+    <div data-bind="scope: 'dealManagementScope'">
+        <!-- ko template: getTemplate() --><!-- /ko -->
+    </div>
+    <script type="text/x-magento-init">
+{
+"*":{
+     "Magento_Ui/js/core/app":{
+        "components":{
+            "dealManagementScope":{
+                "component": "Perspective_Matomo/js/page/deal_management",
+                "fetchBackendUrl":"<?= $block->getRefreshUrl() ?>"
+                }
+            }
+        }
+    }
+}
+
+    </script>
+</div>

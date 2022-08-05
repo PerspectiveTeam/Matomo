@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:framework:Module/etc/module.xsd">
+    <module name="Perspective_Matomo">
+        <sequence>
+            <module name="Magento_Customer"/>
+            <module name="Magento_Inventory"/>
+            <module name="Magento_Reports"/>
+            <module name="Magento_RequireJs"/>
+            <module name="Magento_Sales"/>
+        </sequence>
+    </module>
+</config>

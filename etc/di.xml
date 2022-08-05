@@ -1,0 +1,39 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
+    <preference for="Perspective\Matomo\Api\Data\MatomoSiteEntityInterface"
+                type="Perspective\Matomo\Model\Data\MatomoSiteEntity"/>
+    <preference for="Perspective\Matomo\Api\Data\Cleaner\CleanerInterface"
+                type="Perspective\Matomo\Service\Process\CleanUnnecessaryData"/>
+    <type name="Perspective\Matomo\Service\SiteComparator">
+        <arguments>
+            <argument name="connectivity" xsi:type="object">Perspective\Matomo\Service\Connectivity\AllSitesConnection</argument>
+        </arguments>
+    </type>
+    <type name="Perspective\Matomo\Service\Process\PageUrls">
+        <arguments>
+            <argument name="connectivity" xsi:type="object">Perspective\Matomo\Service\Connectivity\PageUrlsConnection</argument>
+        </arguments>
+    </type>
+    <type name="Perspective\Matomo\Service\Process\Events">
+        <arguments>
+            <argument name="connectivity" xsi:type="object">Perspective\Matomo\Service\Connectivity\LastVisitsDetailsConnection</argument>
+        </arguments>
+    </type>
+    <type name="Perspective\Matomo\Service\Process\CleanUnnecessaryData">
+        <arguments>
+            <argument name="allowedKeys" xsi:type="array">
+                <item name="0" xsi:type="string">label</item>
+                <item name="1" xsi:type="string">outlinks</item>
+                <item name="2" xsi:type="string">nb_visits</item>
+                <item name="3" xsi:type="string">nb_uniq_visitors</item>
+                <item name="4" xsi:type="string">avg_time_on_page</item>
+                <item name="5" xsi:type="string">ctaCount</item>
+                <item name="6" xsi:type="string">exit_nb_visits</item>
+                <item name="7" xsi:type="string">name</item>
+                <item name="8" xsi:type="string">url</item>
+                <item name="9" xsi:type="string">entity_id</item>
+            </argument>
+        </arguments>
+    </type>
+</config>

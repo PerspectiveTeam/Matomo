@@ -1,0 +1,117 @@
+<!--<div class="matomo-timestamp" data-bind="text: timestamp">-->
+<!--</div>-->
+<h3 data-bind="i18n: 'Deal Page Performance Overview'" xmlns:v-bind="https://vuejs.org/v2/api/#v-bind"
+    xmlns:v-bind="https://vuejs.org/v2/api/#v-bind" xmlns:v-bind="https://vuejs.org/v2/api/#v-bind"></h3>
+    <div data-bind="foreach: highestPerformance">
+        <div class="row-of-performance">
+            <div class="cell">
+                <span data-bind="i18n: 'Pageviews'"></span>
+                <div class="value" data-bind="text: pageviews"></div>
+            </div>
+            <div class="cell">
+                <span data-bind="i18n: 'Unique Pageviews'"></span>
+                <div class="value" data-bind="text: uni_pageviews"></div>
+            </div>
+            <div class="cell">
+                <span data-bind="i18n: 'Avg. Time on Page'"></span>
+                <div class="value" data-bind="text: avg_time_on_page"></div>
+            </div>
+            <div class="cell">
+                <span data-bind="i18n: 'CTA Aufrufe'"></span>
+                <div class="value" data-bind="text: cta_views"></div>
+            </div>
+            <div class="cell">
+                <span data-bind="i18n: 'Outlinks'"></span>
+                <div class="value" data-bind="text: outlinks"></div>
+            </div>
+        </div>
+    </div>
+
+<h3 data-bind="i18n: 'Deal performance comparison'"></h3>
+<p data-bind="i18n: 'Select deal and time period to view and compare their performance'"></p>
+<div class="row-configuration-of-data">
+    <div class="cell">
+        <select multiple="multiple" class="multiple-select" data-bind="options: availableDealID, afterRender: multiSelectInit()" style="">
+        </select>
+    </div>
+    <div class="cell">
+        <input type="text" name="dates" class="date-range" data-bind="afterRender: dateRangeInit()">
+    </div>
+    <div class="cell">
+        <button class="update-btn" data-bind="click: exportByFilter, i18n: 'Export'"></button>
+    </div>
+</div>
+<div class="matomo-graph">
+    <canvas id="myChart" width="1140" height="700"></canvas>
+</div>
+<div class="matomo-data" id="dealManagementRowsScopeId" data-bind="scope: 'dealManagementRowsScope'">
+    <table>
+        <thead>
+        <tr>
+            <th>{{ i18n.deal_id }}</th>
+            <th>{{ i18n.deal_name }}</th>
+            <th>{{ i18n.pageviews }}</th>
+            <th>{{ i18n.uni_pageviews }}</th>
+            <th>{{ i18n.avg_time_on_page }}</th>
+            <th>{{ i18n.cta_views }}</th>
+            <th>{{ i18n.outlinks }}</th>
+        </tr>
+        </thead>
+        <tbody>
+            <template v-for="item in items">
+                <tr>
+                    <td class="deal-id">
+                        <span class="deal-color" v-bind:style="{'background': item.color}"></span>
+                        <label>
+                            <input type="checkbox" v-bind:id="item.deal_id" v-model="item.is_checked">
+                            <span></span>
+                        </label>
+                        <span>{{item.deal_id}}</span>
+                    </td>
+                    <td>{{item.deal_name}}</td>
+                    <td>{{item.pageviews}}</td>
+                    <td>{{item.uni_pageviews}}</td>
+                    <td>{{item.avg_time_on_page}}</td>
+                    <td>{{item.cta_views}}</td>
+                    <td>{{item.outlinks}}</td>
+                </tr>
+            </template>
+        </tbody>
+
+    </table>
+</div>
+<div class="wrap-bar">
+    <div class="horizontal-bar" data-bind="foreach: percentBar">
+        <div class="cell" data-bind="style: { background: backgroundColor, width: cellWidth + '%' }">
+            <span data-bind="text: cellWidth >= 1.9 ? cellWidth + '%' : ''"></span>
+        </div>
+    </div>
+</div>
+<div class="nl-performance">
+    <h3 data-bind="i18n: 'Banner & Newsletter Performance'"></h3>
+    <div class="pageview-total">
+        <span data-bind="i18n: 'Deal Pageview total: '"></span>
+        <span data-bind="text: pageViews"></span>
+    </div>
+    <div class="nl-bar" data-bind="foreach: bannerData">
+        <div class="cell">
+            <span class="percent" data-bind="text: percent + ' %'"></span>
+            <span class="bar" data-bind="style: {height: (percent*3) + 'px' }"></span>
+            <span class="name" data-bind="text: name"></span>
+        </div>
+    </div>
+</div>
+<script type="text/x-magento-init">
+    {
+        "*":{
+            "Magento_Ui/js/core/app":{
+                "components":{
+                    "dealManagementRowsScope":{
+                        "component": "Perspective_Matomo/js/page/rows/row"
+                    }
+                }
+            }
+        }
+    }
+
+</script>

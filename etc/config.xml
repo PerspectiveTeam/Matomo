@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Store:etc/config.xsd">
+    <default>
+        <matomo>
+            <general>
+                <enabled>1</enabled>
+                <router_path>matomoext_refresh</router_path>
+                <debug>0</debug>
+                <debug_trim>.loc,.local</debug_trim>
+                <site_url>wir.corplife.at</site_url>
+            </general>
+            <connection>
+                <main_endpoint>https://live.corplife.at/matomo/</main_endpoint>
+            </connection>
+            <cache>
+                <enabled>1</enabled>
+            </cache>
+            <cta>
+                <event_type>eventAction</event_type>
+                <event_value>Click</event_value>
+            </cta>
+        </matomo>
+    </default>
+</config>

@@ -1,0 +1,22 @@
+<?php /** @var $block \Perspective\Matomo\Block\Customer\Account\DealsMain */ ?>
+<div class="deal-management-container" data-mage-init='{"loader": { "icon": "<?= /* @escapeNotVerified */ $block->getViewFileUrl('images/loader-1.gif') ?>"}}'>
+    <h2><?php echo __("Statistics"); ?></h2>
+    <div data-bind="scope: 'dealManagementScope'">
+        <!-- ko template: getTemplate() --><!-- /ko -->
+    </div>
+    <script type="text/x-magento-init">
+{
+"*":{
+     "Magento_Ui/js/core/app":{
+        "components":{
+            "dealManagementScope":{
+                "component": "Perspective_Matomo/js/page/statistics",
+                "fetchBackendUrl":"<?= $block->getRefreshUrl() ?>"
+                }
+            }
+        }
+    }
+}
+
+    </script>
+</div>

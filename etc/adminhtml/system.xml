@@ -1,0 +1,185 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Config:etc/system_file.xsd">
+    <system>
+        <tab id="perspective" translate="label" sortOrder="200" class="perspective-tab">
+            <label>Perspective Studio</label>
+        </tab>
+        <section id="matomo"
+                 translate="label"
+                 type="text"
+                 showInDefault="1"
+                 showInWebsite="1"
+                 showInStore="1"
+                 sortOrder="180">
+            <class>separator-top</class>
+            <label>Matomo</label>
+            <tab>perspective</tab>
+            <resource>Perspective_Matomo::matomo_config</resource>
+            <group id="general"
+                   translate="label"
+                   type="text"
+                   sortOrder="1"
+                   showInDefault="1"
+                   showInWebsite="1">
+                <label>General</label>
+                <field id="enabled"
+                       translate="label"
+                       type="select"
+                       sortOrder="1"
+                       showInDefault="1"
+                       showInWebsite="1"
+                       canRestore="1">
+                    <label>Enable</label>
+                    <comment>Enable processing requests.</comment>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
+                <field id="router_path"
+                       translate="label"
+                       type="text"
+                       sortOrder="50"
+                       showInDefault="1"
+                       showInWebsite="1"
+                       canRestore="1">
+                    <label>Router path</label>
+                    <comment>The path for ajax requests</comment>
+                    <validate>required-entry</validate>
+                    <depends>
+                        <field id="enabled">1</field>
+                    </depends>
+                </field>
+                <field id="debug"
+                       translate="label"
+                       type="select"
+                       sortOrder="1"
+                       showInDefault="1"
+                       showInWebsite="1"
+                       canRestore="1">
+                    <depends>
+                        <field id="enabled">1</field>
+                    </depends>
+                    <label>Debug mode</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
+                <field id="debug_trim"
+                       translate="label"
+                       type="text"
+                       sortOrder="50"
+                       showInDefault="1"
+                       showInWebsite="1"
+                       canRestore="1">
+                    <label>Debug string</label>
+                    <comment>Remove debug parts from Magento base url to be in compliance with Matomo. E.g. In
+                        https://partner.corplife.at.loc the '.loc' part. May contain several values separated by comma. '.loc,.local'
+                    </comment>
+                    <depends>
+                        <field id="debug">1</field>
+                    </depends>
+                </field>
+                <field id="site_url"
+                       translate="label"
+                       type="text"
+                       sortOrder="60"
+                       showInDefault="1"
+                       showInWebsite="1"
+                       canRestore="1">
+                    <label>Debug URL</label>
+                    <comment>The debug URL for frontend request (site comparison) when the site not specified in it. Can be used as emulation of another site of Matomo</comment>
+                    <depends>
+                        <field id="debug">1</field>
+                    </depends>
+                </field>
+            </group>
+            <group id="connection"
+                   translate="label"
+                   type="text"
+                   sortOrder="1"
+                   showInDefault="1"
+                   showInWebsite="1">
+                <label>Connection</label>
+                <field id="main_endpoint" translate="label comment" type="text" sortOrder="5" showInDefault="1"
+                       showInWebsite="1" canRestore="1">
+                    <label>
+                        Matomo API endpoint
+                    </label>
+                    <comment>For example: 'https://example.com/matomo/'</comment>
+                    <backend_model>Magento\Config\Model\Config\Backend\Baseurl</backend_model>
+                    <depends>
+                        <field id="matomo/general/enabled">1</field>
+                    </depends>
+                </field>
+                <field id="matomo_token" translate="label comment" type="text" sortOrder="5" showInDefault="1"
+                       showInWebsite="1" canRestore="1">
+                    <label>
+                        Matomo API security token
+                    </label>
+                    <comment>Can be found at Matomo Security settings</comment>
+                    <depends>
+                        <field id="matomo/general/enabled">1</field>
+                    </depends>
+                </field>
+            </group>
+            <group id="cache"
+                   translate="label"
+                   type="text"
+                   sortOrder="1"
+                   showInDefault="1"
+                   showInWebsite="1">
+                <label>Cache</label>
+                <field id="enabled"
+                       translate="label"
+                       type="select"
+                       sortOrder="1"
+                       showInDefault="1"
+                       showInWebsite="1"
+                       canRestore="1">
+                    <label>Enable</label>
+                    <comment>Enable persisting data in cache</comment>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <depends>
+                        <field id="matomo/general/enabled">1</field>
+                    </depends>
+                </field>
+            </group>
+            <group id="cta"
+                   translate="label"
+                   type="text"
+                   sortOrder="1"
+                   showInDefault="1"
+                   showInWebsite="1">
+                <label>CTA</label>
+                <field id="event_type"
+                       translate="label"
+                       type="select"
+                       sortOrder="50"
+                       showInDefault="1"
+                       showInWebsite="1"
+                       canRestore="1">
+                    <label>Event type</label>
+                    <source_model>Perspective\Matomo\Model\Config\Source\EventTypes</source_model>
+                    <comment>
+                        Used type which will be used to gather the CTA.
+                        For example: if eventAction value used then data will be extracted from it.
+                    </comment>
+                    <depends>
+                        <field id="matomo/general/enabled">1</field>
+                    </depends>
+                </field>
+                <field id="event_value"
+                       translate="label"
+                       type="text"
+                       sortOrder="60"
+                       showInDefault="1"
+                       showInWebsite="1"
+                       canRestore="1">
+                    <label>Event value</label>
+                    <validate>required-entry</validate>
+                    <comment>For example: "Click"</comment>
+                    <depends>
+                        <field id="matomo/general/enabled">1</field>
+                    </depends>
+                </field>
+            </group>
+        </section>
+    </system>
+</config>

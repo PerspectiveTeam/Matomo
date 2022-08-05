@@ -1,0 +1,192 @@
+<?php
+
+namespace Perspective\Matomo\Service\Process;
+
+use Magento\Catalog\Model\ResourceModel\Product\CollectionFactory as ProductCollectionFactory;
+use Magento\Customer\Helper\Session\CurrentCustomer;
+use Magento\Framework\Math\Random;
+use Perspective\Matomo\Api\Data\Cleaner\CleanerInterface;
+use Perspective\Matomo\Api\Data\MatomoSiteEntityInterface;
+use Perspective\Matomo\Helper\DealId;
+use Perspective\Matomo\Service\Cache\OperationsCache;
+use Seraphic\DailyDeals\Model\MerchantFactory;
+use Seraphic\DailyDeals\Model\ResourceModel\Merchant;
+
+class CleanForCustomer implements CleanerInterface
+{
+    /**
+     * @var \Perspective\Matomo\Helper\DealId
+     */
+    protected $dealIdHelper;
+
+    /**
+     * @var array
+     */
+    protected $merchantDeals;
+
+    /**
+     * @var array
+     */
+    protected $merchantDealsIds;
+
+    /**
+     * @var \Perspective\Matomo\Api\Data\MatomoSiteEntityInterface
+     */
+    protected $matomoSite;
+
+    /**
+     * @var mixed
+     */
+    protected $date;
+
+    /**
+     * @var \Perspective\Matomo\Service\Cache\OperationsCache
+     */
+    private $cache;
+
+    /**
+     * @var \Magento\Framework\Math\Random
+     */
+    private $random;
+
+    /**
+     * @var \Perspective\Matomo\Service\Process\CleanUnnecessaryData
+     */
+    private $cleanUnnecessaryData;
+
+    /**
+     * @var \Magento\Customer\Helper\Session\CurrentCustomer
+     */
+    private $currentCustomer;
+
+    /**
+     * @var \Magento\Catalog\Model\ResourceModel\Product\CollectionFactory
+     */
+    private $productCollectionFactory;
+
+    /**
+     * @var \Seraphic\DailyDeals\Model\MerchantFactory
+     */
+    private $merchantFactory;
+
+    /**
+     * @var \Seraphic\DailyDeals\Model\ResourceModel\Merchant
+     */
+    private $merchantResource;
+
+
+    /**
+     * @param \Perspective\Matomo\Helper\DealId $dealIdHelper
+     * @param \Perspective\Matomo\Service\Cache\OperationsCache $cache
+     * @param \Magento\Framework\Math\Random $random
+     * @param \Perspective\Matomo\Service\Process\CleanUnnecessaryData $cleanUnnecessaryData
+     * @param \Magento\Customer\Helper\Session\CurrentCustomer $currentCustomer
+     * @param \Magento\Catalog\Model\ResourceModel\Product\CollectionFactory $productCollectionFactory
+     * @param \Seraphic\DailyDeals\Model\MerchantFactory $merchantFactory
+     * @param \Seraphic\DailyDeals\Model\ResourceModel\Merchant $merchantResource
+     */
+    public function __construct(
+        DealId $dealIdHelper,
+        OperationsCache $cache,
+        Random $random,
+        CleanUnnecessaryData $cleanUnnecessaryData,
+        CurrentCustomer $currentCustomer,
+        ProductCollectionFactory $productCollectionFactory,
+        // Merchant був зовнішньою сутністю
+        MerchantFactory $merchantFactory,
+        Merchant $merchantResource
+    ) {
+        $this->dealIdHelper = $dealIdHelper;
+        $this->cache = $cache;
+        $this->random = $random;
+        $this->cleanUnnecessaryData = $cleanUnnecessaryData;
+        $this->currentCustomer = $currentCustomer;
+        $this->productCollectionFactory = $productCollectionFactory;
+        $this->merchantFactory = $merchantFactory;
+        $this->merchantResource = $merchantResource;
+    }
+
+    public function clean(array $values): ?array
+    {
+        return $this->cleanForSpecificCustomer($values);
+    }
+
+    protected function cleanForSpecificCustomer(array $values)
+    {
+        $values = $this->cleanUnnecessaryData->clean($values);
+        $cacheId = "specific_customer_deals_{$this->currentCustomer->getCustomer()->getId()}_{$this->getMatomoSite()->getIdsite()}_{$this->getDate()}"
+            ?? "specific_customer_deals_{$this->random->getUniqueHash()}_{$this->getMatomoSite()->getIdsite()}_{$this->getDate()}";
+        if (!empty(unserialize($this->cache->load($cacheId)))) {
+            return unserialize($this->cache->load($cacheId));
+        } else {
+            if (!$this->merchantDeals) {
+                $this->merchantDeals = $this->getMerchantDeals();
+            }
+            if (empty($this->merchantDealsIds)) {
+                foreach ($this->merchantDeals as $key => $value) {
+                    $this->merchantDealsIds[] = (int)$value['entity_id'];
+                }
+            }
+            if (isset($values['url'])) {
+                $dealId = is_integer($this->dealIdHelper->process($values['url'])) ? $this->dealIdHelper->process($values['url']) : 0;
+                if (!in_array($dealId, $this->merchantDealsIds)) {
+                    unset($values);
+                    $values = null;
+                }
+            }
+            $this->cache->save(serialize($values), $cacheId);
+            return $values;
+        }
+    }
+
+    /**
+     * @return \Perspective\Matomo\Api\Data\MatomoSiteEntityInterface
+     */
+    public function getMatomoSite(): MatomoSiteEntityInterface
+    {
+        return $this->matomoSite;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getDate()
+    {
+        return $this->date;
+    }
+
+    public function setDate($date)
+    {
+        $this->date = $date;
+    }
+
+    /**
+     * @return array
+     */
+    protected function getMerchantDeals()
+    {
+        $productCollection = $this->productCollectionFactory->create();
+        $collection = $productCollection
+            ->addAttributeToSelect('*')
+            ->addFieldToFilter('merchant_id', ['eq' => $this->getMerchant()->getData('merchant_id')])
+            ->load();
+        return $collection->getData();
+    }
+
+    /**
+     * @return \Seraphic\DailyDeals\Model\Merchant
+     */
+    protected function getMerchant()
+    {
+        $this->merchant = $this->merchantFactory->create();
+        if (!$this->merchant->getData('merchant_id')) {
+            $this->merchantResource->load($this->merchant, $this->currentCustomer->getCustomer()->getId(), 'customer_id');
+        }
+        return $this->merchant;
+    }
+
+    public function setSite(MatomoSiteEntityInterface $matomoSite)
+    {
+        $this->matomoSite = $matomoSite;
+    }
+}
